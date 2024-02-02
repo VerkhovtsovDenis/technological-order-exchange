@@ -1,6 +1,10 @@
-from create_engine import engine
-from create_base import Base
+from create_app import app
 from databases_model import *
+from routers import urls_blueprint
+
+
+app.register_blueprint(urls_blueprint)
+
 
 if __name__ == '__main__':
-    Base.metadata.create_all(engine)
+    app.run(debug=True)

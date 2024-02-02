@@ -1,5 +1,6 @@
 from databases_model.__libs__ import *
 
+
 class User(Base):
     __tablename__ = 'user'
 
@@ -32,6 +33,9 @@ class User(Base):
 
     def __repr__(self):
         return f'<User({self.login}: {self.last_name} {self.first_name} {self.father_name} {self.role})>'
+
+    def get_by_login(self, login):
+        return self.query.where(login=login).first()
 
 
 class UserRole(Base):

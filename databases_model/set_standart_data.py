@@ -1,5 +1,5 @@
 from databases_model import *
-from create_engine import session
+from create_app import session
 
 
 def set_data():
