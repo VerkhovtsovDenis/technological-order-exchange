@@ -34,10 +34,14 @@ def set_data():
     user += [User('Верховцов', 'Денис', 'Олегович', 'verkhovtcov.do', '1234',
                  '2024-02-01 12:00:00', 1, 1, 'М')]
 
-    for item in request_status + organisations + role + user_status + user:
+    for item in request_status + organisations + role + user_status:
         session.add(item)
-
     session.commit()
+
+    for item in user:
+        session.add(item)
+    session.commit()
+
 
 
 if __name__ == '__main__':

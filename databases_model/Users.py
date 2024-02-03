@@ -1,3 +1,5 @@
+from sqlalchemy import func
+
 from databases_model.__libs__ import *
 
 
@@ -13,20 +15,19 @@ class User(Base):
     login = Column('login', String)
     password = Column('password', String)
 
-    last_update = Column('last_update', DateTime)
+    last_update = Column('last_update', DateTime, server_default=func.now())
 
     role = Column('role', ForeignKey('user_role.id'))
     status = Column('status', ForeignKey('user_status.id'))
 
     gender = Column('gender', CHAR)
 
-    def __init__(self, first_name, last_name, father_name, login, password, last_update, role, status, gender):
+    def __init__(self, first_name, last_name, father_name, login, password, role=1, status=1, gender='М'):
         self.first_name = first_name
         self.last_name = last_name
         self.father_name = father_name
         self.login = login
         self.password = password
-        self.last_update = last_update
         self.role = role
         self.status = status
         self.gender = gender
@@ -34,8 +35,31 @@ class User(Base):
     def __repr__(self):
         return f'<User({self.login}: {self.last_name} {self.first_name} {self.father_name} {self.role})>'
 
-    def get_by_login(self, login):
-        return self.query.where(login=login).first()
+    def get(self):
+        return self
+
+    def get_id(self):
+        return str(self.id)
+
+    @staticmethod
+    def get_by_login(login):
+        return User.query.filter_by(login=login).first()
+
+    @staticmethod
+    def get_by_id(user_id: int):
+        return User.query.get(user_id)
+
+
+    @staticmethod
+    def is_authenticated(self):
+        return True
+
+    def is_active(self):
+        return self.status == 1
+
+    @staticmethod
+    def is_anonymous(self):
+        return False
 
 
 class UserRole(Base):
