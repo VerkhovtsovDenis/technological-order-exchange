@@ -1,6 +1,13 @@
-from sqlalchemy import func
+from datetime import datetime
+from random import randint
 
+from mimesis.builtins import RussiaSpecProvider
+from sqlalchemy import func
+from werkzeug.security import generate_password_hash
+
+from create_app import session
 from databases_model.__libs__ import *
+
 
 
 class User(Base):
@@ -27,13 +34,47 @@ class User(Base):
         self.last_name = last_name
         self.father_name = father_name
         self.login = login
-        self.password = password
+        self.password = generate_password_hash(password, method='pbkdf2')
+
+        timestamp = datetime.now()
+        self.last_update = timestamp.strftime('%Y-%m-%d %H:%M:%S')
+
         self.role = role
         self.status = status
         self.gender = gender
 
     def __repr__(self):
         return f'<User({self.login}: {self.last_name} {self.first_name} {self.father_name} {self.role})>'
+
+    @staticmethod
+    def _bootstrap(count=50, locale='ru'):
+        from mimesis.providers import Person
+        from mimesis.enums import Gender
+
+        person = Person(locale)
+        p = RussiaSpecProvider()
+        patients = []
+        for _ in range(count):
+
+            a = randint(0, 2)
+            sex = Gender.MALE if randint(0, 2) == 0 else Gender.FEMALE
+
+            patient = User(
+                first_name = person.name(gender=sex),
+                last_name = person.surname(gender=sex),
+                father_name = p.patronymic(gender=sex),
+                login = person.email().split('@')[0],
+                password = '1234',
+                role=1,
+                status=1,
+                gender ='М' if sex == Gender.MALE else 'Ж')
+            patients.append(patient)
+            print(f'{_}-й был сгенерирован')
+
+        for patient in patients:
+            session.add(patient)
+        session.commit()
+
 
     def get(self):
         return self
@@ -48,6 +89,19 @@ class User(Base):
     @staticmethod
     def get_by_id(user_id: int):
         return User.query.get(user_id)
+
+    @staticmethod
+    def get_all():
+        Query = User.query
+        Query = Query.join(UserRole).add_column(UserRole.role)
+        Query = Query.join(UserStatus).add_column(UserStatus.status)
+        return Query
+
+    @staticmethod
+    def delete_by_id(postID):
+        User.query.filter_by(id=postID).delete()
+        session.commit()
+        return User.get_all()
 
 
     @staticmethod

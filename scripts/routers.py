@@ -4,8 +4,8 @@ from werkzeug.security import check_password_hash, generate_password_hash
 
 from databases_model.Users import User
 from flask import Blueprint
-from scripts.menu import menu
-from scripts.forms import LoginForm, SignupForm
+from scripts.menu import menu, admin_menu
+from scripts.forms import LoginForm, SignupForm, UpdateUserFrom
 from flask_login import login_user, login_required, current_user, logout_user
 from create_app import session
 
@@ -23,8 +23,7 @@ login_manager.init_app(app)
 
 @login_manager.user_loader
 def load_user(user_id):
-    print('user_id = ', user_id)
-    return User.get_by_login(user_id)
+    return User.get_by_id(user_id)
 
 
 urls_blueprint = Blueprint('urls', __name__,)
@@ -57,9 +56,10 @@ def login():
         if user and check_password_hash(user.password, password):
             login_user(user, remember=remember)
             print(4)
-            flash(f'Верно указаны почта или пароль.', category='success')
+            flash(f'Верно указаны почта и пароль.', category='success')
 
-            return redirect(url_for('urls.admin'))
+            next = request.args.get('next')
+            return redirect(next or url_for('urls.admin'))
         flash(f'Неверно указана почта или пароль.', category='error')
 
     return render_template('login.html', title='Авторизация', menu=menu, form=form)
@@ -92,8 +92,7 @@ def signup():
             father_name = form.father_name.data
 
             # TODO gender chose
-            new_user = User(first_name, last_name, father_name, login,
-                            password=generate_password_hash(password, method='pbkdf2'))
+            new_user = User(first_name, last_name, father_name, login, password)
             session.add(new_user)
             session.commit()
 
@@ -103,9 +102,51 @@ def signup():
     return render_template('signup.html', title="Регистрация", menu=menu, form=form)
 
 
-@urls_blueprint.route('/admin/<login>')
+@urls_blueprint.route('/admin')
 @login_required
-def admin(login):
-    print(login)
-    return render_template('admin.html', title='Админ', menu=menu, user=current_user)
+def admin():
+    User._bootstrap()
+    return render_template('admin//main.html', title='Панель администратора', adminmenu=admin_menu, user=current_user)
+
+
+@urls_blueprint.route('/admin/users')
+@login_required
+def admin_users():
+    users = User.get_all()
+    return render_template('admin//users.html', title='Панель администратора: БД Пользователи', adminmenu=admin_menu, user=current_user, users=users)
+
+
+@urls_blueprint.route('/admin/users/delete/<int:postID>')
+@login_required
+def admin_users_delete(postID):
+    users = User.delete_by_id(postID)
+    return url_for('urls.admin_users')
+
+
+@urls_blueprint.route('/admin/users/update/<int:postID>', methods=['GET', 'POST'])
+@login_required
+def admin_users_update(postID):
+    form = UpdateUserFrom()
+    user = User.get_by_id(postID)
+    form.fluid(user)
+
+    return render_template('admin//edit.html', title='Панель администратора', adminmenu=admin_menu, user=current_user, form=form)
+
+
+@urls_blueprint.route('/admin/organisation')
+@login_required
+def admin_organisation():
+    return render_template('admin//organisation.html', title='Панель администратора: БД Организации', adminmenu=admin_menu, user=current_user)
+
+
+@urls_blueprint.route('/admin/update:<table>:<id>')
+@login_required
+def update(table, id):
+
+    return f'data was update, {table} {id}'
+@urls_blueprint.route('/admin/delete:<table>:<id>')
+@login_required
+def delete(table, id):
+
+    return f'data was delete, {table} {id}'
 

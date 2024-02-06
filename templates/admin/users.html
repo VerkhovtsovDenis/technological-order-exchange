@@ -1,0 +1,53 @@
+{% extends 'admin//base.html' %}
+
+{% block content %}
+{{ super() }}
+{% for cat, msg in get_flashed_messages(True) %}
+<div class="flash {{cat}}">{{ msg }}</div>
+{% endfor %}
+
+
+<section>
+    <h2>Содержимое страницы</h2>
+    <p>Текст страницы...</p>
+
+    <a href="{{url_for('urls.update', table='user', id=1)}}">Добавить</a>
+
+    <table>
+            <tr>
+                    <th>(✔)</th>
+                    <th>Id</th>
+                    <th>Фамилия</th>
+                    <th>Имя</th>
+                    <th>Отчество</th>
+                    <th>Логин</th>
+                    <th>Пол</th>
+                    <th>Последнее обновление</th>
+                    <th>Роль</th>
+                    <th>Статус</th>
+                    <th>Изменить</th>
+                    <th>Удалить</th>
+            </tr>
+
+            {% for user, role, status in users %}
+            <tr>
+                    <td><input type="checkbox" class="select-checkbox" data-user-id="{{ user.id }}"></td> <!-- Добавленный чекбокс -->
+                    <td>{{ user.id }}</td>
+                    <td>{{ user.last_name }}</td>
+                    <td>{{ user.first_name }}</td>
+                    <td>{{ user.father_name }}</td>
+                    <td>{{ user.login }}</td>
+                    <td>{{ user.gender }}</td>
+                    <td>{{ user.last_update }}</td>
+                    <td>{{ role }}</td>
+                    <td>{{ status }}</td>
+                    <td><a href="{{url_for('urls.admin_users_update', postID=user.id)}}">Update</a></td>
+                    <td><a href="{{url_for('urls.admin_users_delete', postID=user.id)}}">delete</a></td>
+            </tr>
+            {% endfor %}
+
+    </table>
+
+</section>
+
+{% endblock %}

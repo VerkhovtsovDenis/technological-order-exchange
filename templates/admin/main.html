@@ -1,0 +1,15 @@
+{% extends 'admin//base.html' %}
+
+{% block content %}
+{{ super() }}
+{% for cat, msg in get_flashed_messages(True) %}
+<div class="flash {{cat}}">{{ msg }}</div>
+{% endfor %}
+
+
+<section>
+    <h2>Содержимое страницы</h2>
+    <p>Текст страницы...</p>
+</section>
+
+{% endblock %}

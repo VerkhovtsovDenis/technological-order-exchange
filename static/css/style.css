@@ -90,30 +90,3 @@ div.content{
     background: #8caec9;
 }
 
-table{
-    width: 300px; /* Ширина таблицы */
-    border-collapse: collapse; /* Убираем двойные линии между ячейками */
-    margin: 10px 10px 10px 10px;
-}
-th, td{
-    padding: 3px; /* Поля вокруг содержимого таблицы */
-    border: 1px solid black; /* Параметры рамки */
-}
-
-table tr:nth-child(odd) {
-    background-color: #FFFFFF;/* фон нечетных строк */
-}
-
-tr:nth-child(even) {
-    background-color: #B8D7EA ;/* фон четных строк */
-}
-
-tr:hover td{
-    background: #84C2EA;/* фон строки при наведении */
-
-  }
-
-
-th {
-    background: #2E74A2; /* Цвет первого заглловка */
-}

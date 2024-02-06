@@ -6,25 +6,11 @@
 <div class="flash {{cat}}">{{ msg }}</div>
 {% endfor %}
 
-<h3>Привет, {{ user.last_name }}!</h3>
+<h3>Привет, {{user.second_name}}!</h3>
 
 <h2><p>Содержимое страницы "Админ":</p></h2>
 
 <h3>Информация о пользователях:</h3>
-
-<table>
-        <tr>
-                <th>Фамилия</th>
-                <th>Имя</th>
-                <th>Отчество</th>
-                <th>Логин</th>
-                <th>Изменить</th>
-                <th>Удалить</th>
-        </tr>
-
-
-
-</table>
-<a href="{{url_for('urls.about')}}">Выйти из системы</a>
+<a href="{{url_for('urls.logout')}}">Выйти из системы</a>
 
 {% endblock %}

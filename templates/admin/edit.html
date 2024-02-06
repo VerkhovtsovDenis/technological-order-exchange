@@ -1,12 +1,17 @@
-{% extends 'base.html' %}
+{% extends 'admin//base.html' %}
 
 {% block content %}
 {{ super() }}
 {% for cat, msg in get_flashed_messages(True) %}
-<div class="flash {{cat}}">{{ msg }} {{ cat }}</div>
+<div class="flash {{cat}}">{{ msg }}</div>
 {% endfor %}
 
-<form action="/signup" method="post" class="form-contact">
+
+<section>
+    <h2>Содержимое страницы</h2>
+    <p>Текст страницы...</p>
+
+    <form action="/admin/users/update" method="post" class="form-contact">
     {{ form.hidden_tag() }}
     <table>
         {% for filed in form if filed.name not in ['csrf_token', 'submit']%}
@@ -29,7 +34,9 @@
 
     </table>
     <p>{{ form.submit() }}</p>
-</form>
+    </form>
 
-<p>Содержимое страницы "Контакты"</p>
+</section>
+
 {% endblock %}
+
